@@ -12,31 +12,35 @@ public class Main {
     public static void main(String[] args) {
 
 
-//        Locale locale = new Locale("en", "US");
-//        ResourceBundle rb = ResourceBundle.getBundle("in", locale);
-//        Enumeration<String> keys = rb.getKeys();
-//        String key;
-//        System.out.println();
-//
-//        while (keys.hasMoreElements()) {
-//            key = keys.nextElement();
-//            System.out.println(key);
-//        }
+        Locale locale = new Locale("en", "US");
+        ResourceBundle rb = ResourceBundle.getBundle("in", locale);
+        Enumeration<String> keys = rb.getKeys();
+        String key;
+        System.out.println();
+
+        while (keys.hasMoreElements()) {
+            key = keys.nextElement();
+            System.out.println(key);
+        }
         System.out.println("l");
 
-        System.out.println(getValueKey("value 42 =e1"));;
+        System.out.println(rb.getString("value12"));
+        ;
+
+//        System.out.println(getValueKey("index   1    = 3"));;
     }
 
-    public static String getValueKey(String lineToExtracct) {
-        Pattern pattern = Pattern.compile("value\\s*=\\s*(.*?)=");
-        Matcher matcher = pattern.matcher(lineToExtracct);
+    public static String getValueKey(String lineToExtract, ResourceBundle bundle) {
+        Pattern pattern = Pattern.compile("index(.*?)=");
+        Matcher matcher = pattern.matcher(lineToExtract);
+        String extractedString;
 
         if (matcher.find()) {
-            String extractedString = matcher.group(1).trim();
-            System.out.println(extractedString);
-            return extractedString;
+            extractedString = matcher.group(1).trim();
+            System.out.println(extractedString); // Output: "1"
+
         }
         return "nope";
-    }
 
+    }
 }

@@ -7,16 +7,17 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-    public static String NAME_OF_FILE = "in%s";
-    public static int AMOUNT_OF_FILES = 3;
+    private static final String NAME_OF_FILE = "in%s";
+    private static final int AMOUNT_OF_FILES = 3;
+    public static final String INDEX = "index";
+    public static final String VALUE = "value";
 
     public static void main(String[] args) {
 
 
         for (int counter = 1; counter <= AMOUNT_OF_FILES; counter++) {
             String path = String.format(NAME_OF_FILE, counter);
-            Locale locale = new Locale("en", "US");
-            ResourceBundle rb = ResourceBundle.getBundle(path, locale);
+            ResourceBundle rb = ResourceBundle.getBundle(path, Locale.ENGLISH);
             Enumeration<String> keys = rb.getKeys();
 
             String key;
@@ -27,8 +28,8 @@ public class Main {
             while (keys.hasMoreElements()) {
                 try {
                     key = keys.nextElement();
-                    if (key.startsWith("index")) {
-                        result = result.add(new BigDecimal((rb.getString("value" + getKeyByIndexLine(key, rb)).trim())));
+                    if (key.startsWith(INDEX)) {
+                        result = result.add(new BigDecimal((rb.getString(VALUE + getKeyByIndexLine(key, rb)).trim())));
                     }
                 } catch (Exception wrongArgument) {
                     misunderstandings++;
@@ -40,13 +41,13 @@ public class Main {
     }
 
     public static String getKeyByIndexLine(String lineToExtract, ResourceBundle bundle) {
-        Pattern pattern = Pattern.compile("index(.*)");
+        Pattern pattern = Pattern.compile(INDEX + "(.+)");
         Matcher matcher = pattern.matcher(lineToExtract);
         String extractedString;
 
         if (matcher.find()) {
             extractedString = canWeUseThisDigit(matcher.group(1).trim());
-            String key = canWeUseThisDigit(bundle.getString("index" + extractedString));
+            String key = canWeUseThisDigit(bundle.getString(lineToExtract));
             return extractedString + key;
         } else {
             throw new IllegalArgumentException("Index is missing");
@@ -54,7 +55,7 @@ public class Main {
     }
 
     public static String canWeUseThisDigit(String str) {
-        if (!str.matches("-?\\d+")) {
+        if (!str.matches("([1-9])([0-9])*")) {
             throw new IllegalArgumentException("Wrong format of index or key");
         }
         return str;

@@ -40,7 +40,7 @@ public class Main {
 
         String key;
         BigDecimal result = new BigDecimal(0);
-        int misunderstandings = 0;
+        int errorLines = 0;
 
         while (keys.hasMoreElements()) {
             try {
@@ -49,11 +49,11 @@ public class Main {
                     result = result.add(new BigDecimal((bundle.getString(VALUE + getKeyByIndexLine(key, bundle)).trim())));
                 }
             } catch (Exception wrongArgument) {
-                misunderstandings++;
+                errorLines++;
             }
         }
         builder.append(SUM_TEXT).append(result);
-        return misunderstandings;
+        return errorLines;
     }
 
     public static String getKeyByIndexLine(String lineToExtract, ResourceBundle bundle) {
@@ -62,15 +62,15 @@ public class Main {
         String extractedString;
 
         if (matcher.find()) {
-            extractedString = canWeUseThisDigit(matcher.group(1).trim());
-            String key = canWeUseThisDigit(bundle.getString(lineToExtract));
+            extractedString = isNumber(matcher.group(1).trim());
+            String key = isNumber(bundle.getString(lineToExtract));
             return extractedString + key;
         } else {
             throw new IllegalArgumentException("Index is missing");
         }
     }
 
-    public static String canWeUseThisDigit(String str) {
+    public static String isNumber(String str) {
 
         if (!str.matches(CORRECT_NUMBER_PATTERN)) {
             throw new IllegalArgumentException("Wrong format of index or key");

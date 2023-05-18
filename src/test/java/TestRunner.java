@@ -1,55 +1,48 @@
 import org.junit.jupiter.api.Test;
-import java.util.Locale;
+import java.math.BigDecimal;
 import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class RunnerTest {
-
+public class TestRunner {
     @Test
-    public void testFirstScenario() {
-        StringBuilder result = new StringBuilder();
-        String path = String.format(Main.NAME_OF_FILE, 1);
-        ResourceBundle rb = ResourceBundle.getBundle(path, Locale.ENGLISH);
+    public void testMainScenario() {
+        class TestCase {
+            private final String fileName;
+            private final Main.Result result;
 
-        int errorLines = Main.searchForCorrectValues(result, rb);
-        assertEquals(3, errorLines);
-        String expectedIn1 = Main.SUM_TEXT + "8.24";
-        assertEquals(expectedIn1, result.toString());
-    }
+            public TestCase(String fileName, Main.Result result) {
+                this.fileName = fileName;
+                this.result = result;
+            }
 
-    @Test
-    public void testSecondScenario() {
-        StringBuilder result = new StringBuilder();
-        String path = String.format(Main.NAME_OF_FILE, 2);
-        ResourceBundle rb = ResourceBundle.getBundle(path, Locale.ENGLISH);
+            public TestCase(String fileName, int errors, BigDecimal sum) {
+                this.fileName = fileName;
+                this.result = new Main.Result(errors, sum);
+            }
 
-        int errorLines = Main.searchForCorrectValues(result, rb);
-        assertEquals(9, errorLines);
-        String expectedIn1 = Main.SUM_TEXT + "30.242";
-        assertEquals(expectedIn1, result.toString());
-    }
+            public String getFileName() {
+                return fileName;
+            }
 
-    @Test
-    public void testThirdScenario() {
-        StringBuilder result = new StringBuilder();
-        String path = String.format(Main.NAME_OF_FILE, 3);
-        ResourceBundle rb = ResourceBundle.getBundle(path, Locale.ENGLISH);
+            public Main.Result getResult() {
+                return result;
+            }
+        }
 
-        int errorLines = Main.searchForCorrectValues(result, rb);
-        assertEquals(0, errorLines);
-        String expectedIn1 = Main.SUM_TEXT + "1.9";
-        assertEquals(expectedIn1, result.toString());
+        TestCase[] testCases = {
+                new TestCase("in1", 3, new BigDecimal("8.24")),
+                new TestCase("in2", 9, new BigDecimal("30.242")),
+                new TestCase("in3", 0, new BigDecimal("1.9"))
+        };
+        for (TestCase testCase : testCases) {
+            Main.Result result = Main.getResult(testCase.getFileName());
+            assertEquals(result.getErrorLines(), testCase.getResult().getErrorLines());
+            assertEquals(result.getSum(), testCase.getResult().getSum());
+        }
     }
 
     @Test
     public void testWrongName() {
-        assertThrows(MissingResourceException.class, () -> {
-            StringBuilder result = new StringBuilder();
-            String path = String.format(Main.NAME_OF_FILE, 7);
-            ResourceBundle rb = ResourceBundle.getBundle(path, Locale.ENGLISH);
-            Main.searchForCorrectValues(result, rb);
-        });
+        assertThrows(MissingResourceException.class, () -> Main.getResult("in"));
     }
 }
